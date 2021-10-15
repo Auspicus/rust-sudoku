@@ -90,27 +90,27 @@ fn test_board() -> solver::Board {
 
 #[test]
 fn not_valid_1_1_5() {
-    assert!(!solver::is_value_possible(&mut test_board(), (1, 1), 5))
+    assert!(!solver::is_value_possible(&test_board(), (1, 1), 5))
 }
 
 #[test]
 fn not_valid_3_3_3() {
-    assert!(!solver::is_value_possible(&mut test_board(), (3, 3), 3))
+    assert!(!solver::is_value_possible(&test_board(), (3, 3), 3))
 }
 
 #[test]
 fn valid_3_3_5() {
-    assert!(solver::is_value_possible(&mut test_board(), (3, 3), 5))
+    assert!(solver::is_value_possible(&test_board(), (3, 3), 5))
 }
 
 #[test]
 fn not_valid_4_4_3() {
-    assert!(!solver::is_value_possible(&mut test_board(), (4, 4), 3))
+    assert!(!solver::is_value_possible(&test_board(), (4, 4), 3))
 }
 
 #[test]
 fn valid_4_4_5() {
-    assert!(solver::is_value_possible(&mut test_board(), (4, 4), 5))
+    assert!(solver::is_value_possible(&test_board(), (4, 4), 5))
 }
 
 #[test]
