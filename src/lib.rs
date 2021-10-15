@@ -1,8 +1,8 @@
 pub mod solver {
-    pub type Board = Box<[[u8; 9]; 9]>;
+    pub type Board<'a> = &'a mut [[u8; 9]; 9];
     pub type CellCoordinates = (usize, usize);
 
-    pub fn is_value_possible(board: &Board, coordinates: CellCoordinates, value: u8) -> bool {
+    pub fn is_value_possible(board: Board, coordinates: CellCoordinates, value: u8) -> bool {
         let (row, column) = coordinates;
 
         for i in 0..9 {
@@ -25,11 +25,11 @@ pub mod solver {
         true
     }
 
-    fn is_board_solved(board: &Board) -> bool {
+    fn is_board_solved(board: Board) -> bool {
         coordinates_of_next_empty_cell(board) == (10, 10)
     }
 
-    fn coordinates_of_next_empty_cell(board: &Board) -> CellCoordinates {
+    fn coordinates_of_next_empty_cell(board: Board) -> CellCoordinates {
         for row in 0..9 {
             for column in 0..9 {
                 if board[row][column] == 0 {
@@ -40,7 +40,7 @@ pub mod solver {
         (10, 10)
     }
 
-    fn possible_values_for_cell(board: &Board, coordinates: CellCoordinates) -> Vec<u8> {
+    fn possible_values_for_cell(board: Board, coordinates: CellCoordinates) -> Vec<u8> {
         let (row, column) = coordinates;
         let mut result = vec![];
         for guess in 1..10 {
@@ -51,9 +51,9 @@ pub mod solver {
         result
     }
 
-    pub fn solve(board: &mut Board) -> () {
+    pub fn solve(board: Board) -> () {
         if is_board_solved(board) {
-            return;
+            return
         }
 
         let (row, column) = coordinates_of_next_empty_cell(board);
@@ -66,14 +66,12 @@ pub mod solver {
             }
             board[row][column] = 0;
         }
-
-        return
     }
 }
 
 #[allow(dead_code)]
-fn test_board() -> solver::Board {
-    Box::new([
+fn test_board() -> [[u8; 9]; 9] {
+    [
         [5, 3, 0,   0, 7, 0,    0, 0, 0],
         [6, 0, 0,   1, 9, 5,    0, 0, 0],
         [0, 9, 8,   0, 0, 0,    0, 6, 0],
@@ -85,37 +83,37 @@ fn test_board() -> solver::Board {
         [0, 6, 0,   0, 0, 0,    2, 8, 0],
         [0, 0, 0,   4, 1, 9,    0, 0, 5],
         [0, 0, 0,   0, 8, 0,    0, 7, 9],
-    ])
+    ]
 }
 
 #[test]
 fn not_valid_1_1_5() {
-    assert!(!solver::is_value_possible(&test_board(), (1, 1), 5))
+    assert!(!solver::is_value_possible(&mut test_board(), (1, 1), 5))
 }
 
 #[test]
 fn not_valid_3_3_3() {
-    assert!(!solver::is_value_possible(&test_board(), (3, 3), 3))
+    assert!(!solver::is_value_possible(&mut test_board(), (3, 3), 3))
 }
 
 #[test]
 fn valid_3_3_5() {
-    assert!(solver::is_value_possible(&test_board(), (3, 3), 5))
+    assert!(solver::is_value_possible(&mut test_board(), (3, 3), 5))
 }
 
 #[test]
 fn not_valid_4_4_3() {
-    assert!(!solver::is_value_possible(&test_board(), (4, 4), 3))
+    assert!(!solver::is_value_possible(&mut test_board(), (4, 4), 3))
 }
 
 #[test]
 fn valid_4_4_5() {
-    assert!(solver::is_value_possible(&test_board(), (4, 4), 5))
+    assert!(solver::is_value_possible(&mut test_board(), (4, 4), 5))
 }
 
 #[test]
 fn solves_easy_board() {
-    let mut board = Box::new([
+    let mut board = [
         [5, 3, 0,   0, 7, 0,    0, 0, 0],
         [6, 0, 0,   1, 9, 5,    0, 0, 0],
         [0, 9, 8,   0, 0, 0,    0, 6, 0],
@@ -127,12 +125,12 @@ fn solves_easy_board() {
         [0, 6, 0,   0, 0, 0,    2, 8, 0],
         [0, 0, 0,   4, 1, 9,    0, 0, 5],
         [0, 0, 0,   0, 8, 0,    0, 7, 9],
-    ]);
+    ];
 
     solver::solve(&mut board);
 
     assert_eq!(
-        *board,
+        board,
         [
             [5, 3, 4,   6, 7, 8,    9, 1, 2],
             [6, 7, 2,   1, 9, 5,    3, 4, 8],
@@ -152,7 +150,7 @@ fn solves_easy_board() {
 
 #[test]
 fn solves_hard_board() {
-    let mut board = Box::new([
+    let mut board = [
         [8, 0, 0,   0, 0, 0,    0, 0, 0],
         [0, 0, 3,   6, 0, 0,    0, 0, 0],
         [0, 7, 0,   0, 9, 0,    2, 0, 0],
@@ -164,12 +162,12 @@ fn solves_hard_board() {
         [0, 0, 1,   0, 0, 0,    0, 6, 8],
         [0, 0, 8,   5, 0, 0,    0, 1, 0],
         [0, 9, 0,   0, 0, 0,    4, 0, 0],
-    ]);
+    ];
 
     solver::solve(&mut board);
 
     assert_eq!(
-        *board,
+        board,
         [
             [8, 1, 2,   7, 5, 3,    6, 4, 9],
             [9, 4, 3,   6, 2, 8,    7, 5, 1],
